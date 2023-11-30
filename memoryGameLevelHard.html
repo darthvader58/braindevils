@@ -108,7 +108,16 @@
   <title>Memory Game</title>
 </head>
 <body>
-
+<div style="width: 1164px; height: 82px; left: 30px; top: 20px; position: absolute">
+        <div style="width: 166px; height: 42px; left: 998px; top: 20px; position: absolute">
+            <div style="width: 166px; height: 42px; left: 0px; top: 0px; position: absolute; background: #484848; border-radius: 20px"></div>
+            <div style="width: 137.13px; height: 12.80px; left: 14px; top: 15px; position: absolute; text-align: center; color: white; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">Log in</div>
+        </div>
+        <div style="width: 252px; height: 25px; left: 670px; top: 28px; position: absolute; text-align: right; color: black; font-size: 20px; font-family: Inter; font-weight: 700; word-wrap: break-word">Upgrade to Pro *</div>
+        <a href="index.html"><img style="width: 82px; height: 82px; left: 0px; top: 0px; position: absolute" src="images/logo.png" /></a>
+    </div>
+     <br><br><br><br>
+  <h1 style="text-align: center">Memory Game</h1>
 <div id="screen1">
   <h2>Remember the shapes for 5 seconds:</h2>
   <div class="grid" id="grid"></div>
@@ -117,14 +126,14 @@
 <div id="screen2" style="display: none;">
   <h2>Enter the corresponding unit digit for each shape:</h2>
   <div class="grid" id="inputGrid"></div>
-  <div id="shapes-container"></div>
-  <p id="timer">Time Left: 30.00</p>
+  <div id="shapes-container" style="padding: 20px"></div>
+  <p id="timer" style="font-size:2em; color:#323232">Time Left: 30.00</p>
 </div>
 
 <div id="screen3" style="display: none;">
-  <h2>Your Score:</h2>
-  <p id="score"></p>
-  <p id="timer">Time Left: 0.00</p>
+  <h2 style="margin-left: 20px">Your Score:</h2>
+  <p id="score" style="font-size:2em; color:green"></p>
+  <p id="timer" style="font-size:2em; color:red">Time Left: 0.00</p>
 </div>
 
 <script>

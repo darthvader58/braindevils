@@ -6,7 +6,7 @@
   <style>
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
+      grid-template-columns: repeat(2, 100px);
       gap: 10px;
     }
     .cell {
@@ -52,28 +52,16 @@
       transform: translate(-50%, -50%);
       font-size: 1.2em;
     }
-    .shape-rectangle {
-      width: 80px;
-      height: 50px;
-      background-color: #8B0000; /* Dark Red */
-    }
     .shape-star {
       width: 50px;
       height: 50px;
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
       background-color: #008000; /* Dark Green */
     }
-    .shape-triangle {
+    .shape-square {
       width: 50px;
       height: 50px;
-      background-color: #FF1493; /* Deep Pink */
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-    }
-    .shape-pentagon {
-      width: 50px;
-      height: 50px;
-      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-      background-color: #2E8B57; /* Sea Green */
+      background-color: #800080; /* Purple */
     }
     .shape-circle {
       width: 50px;
@@ -81,28 +69,11 @@
       background-color: #00008B; /* Dark Blue */
       border-radius: 50%;
     }
-    .shape-trapezium {
-      width: 80px;
-      height: 50px;
-      clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
-      background-color: #FFD700; /* Gold */
-    }
-    .shape-hexagon {
+    .shape-triangle {
       width: 50px;
       height: 50px;
-      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-      background-color: #8B4513; /* Saddle Brown */
-    }
-    .shape-semicircle {
-      width: 50px;
-      height: 25px;
-      border-radius: 0 0 50% 50%;
-      background-color: #4B0082; /* Indigo */
-    }
-    .shape-square {
-      width: 50px;
-      height: 50px;
-      background-color: #800080; /* Purple */
+      background-color: #FF1493; /* Deep Pink */
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
     }
   </style>
   <title>Memory Game</title>
@@ -119,14 +90,14 @@
      <br><br><br><br>
   <h1 style="text-align: center">Memory Game</h1>
 <div id="screen1">
-  <h2>Remember the shapes for 10 seconds:</h2>
+  <h2>Remember the shapes for 5 seconds:</h2>
   <div class="grid" id="grid"></div>
 </div>
 
 <div id="screen2" style="display: none;">
   <h2>Enter the corresponding unit digit for each shape:</h2>
   <div class="grid" id="inputGrid"></div>
-  <div id="shapes-container" style="padding: 20px"></div>
+  <div id="shapes-container"></div>
   <p id="timer" style="font-size:2em">Time Left: 30.00</p>
 </div>
 
@@ -137,7 +108,7 @@
 </div>
 
 <script>
-  const shapes = ["Semicircle", "Circle", "Pentagon", "Square", "Rectangle", "Star", "Hexagon", "Trapezium", "Triangle"];
+  const shapes = ["Star", "Square", "Circle", "Triangle"];
   let originalGrid = [];
   let userGrid = [];
   let shapeIndexDict = {}; // Dictionary to map shapes to indices
@@ -149,8 +120,8 @@
 
   function generateRandomGrid() {
     const shuffledShapes = [...shapes].sort(() => Math.random() - 0.5);
-    originalGrid = shuffledShapes.slice(0, 9);
-    userGrid = Array(9).fill("");
+    originalGrid = shuffledShapes.slice(0, 4);
+    userGrid = Array(4).fill("");
     
     shapeIndexDict = {};
     originalGrid.forEach((shape, index) => {
@@ -172,7 +143,7 @@
       setTimeout(() => {
         cell.innerHTML = `<div class="shape shape-${shape.toLowerCase()}"></div>`;
         showScreen2();
-      }, 10000);
+      }, 5000);
     });
   }
 
@@ -180,7 +151,7 @@
     const inputGridElement = document.getElementById("inputGrid");
     inputGridElement.innerHTML = "";
 
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 4; i++) {
       const cell = document.createElement("div");
       cell.classList.add("cell");
       const input = document.createElement("input");
@@ -200,44 +171,42 @@
   }
 
   function showShapesWithNumbers() {
-  const shapesContainer = document.getElementById("shapes-container");
-  shapesContainer.innerHTML = "";
+    const shapesContainer = document.getElementById("shapes-container");
+    shapesContainer.innerHTML = "";
 
-  // Create an array of objects with shape and number properties
-  const shapeNumberArray = originalGrid.map((shape, index) => ({ shape, number: index + 1 }));
+    // Create an array of objects with shape and number properties
+    const shapeNumberArray = originalGrid.map((shape, index) => ({ shape, number: index + 1 }));
 
-  // Shuffle the array
-  const shuffledArray = shapeNumberArray.sort(() => Math.random() - 0.5);
+    // Shuffle the array
+    const shuffledArray = shapeNumberArray.sort(() => Math.random() - 0.5);
 
-  shuffledArray.forEach(({ shape, number }) => {
-    const shapeElement = document.createElement("div");
-    shapeElement.classList.add("shape-with-number");
-    shapeElement.classList.add(`shape-${shape.toLowerCase()}`);
-    shapeElement.innerHTML = `<div class="number">${number}</div>`;
-    shapesContainer.appendChild(shapeElement);
+    shuffledArray.forEach(({ shape, number }) => {
+      const shapeElement = document.createElement("div");
+      shapeElement.classList.add("shape-with-number");
+      shapeElement.classList.add(`shape-${shape.toLowerCase()}`);
+      shapeElement.innerHTML = `<div class="number">${number}</div>`;
+      shapesContainer.appendChild(shapeElement);
 
-    // Map shuffled shapes to numbers
-    shapeNumberDict[number] = shape;
-  });
-}
+      // Map shuffled shapes to numbers
+      shapeNumberDict[number] = shape;
+    });
+  }
 
+  function checkGameOver() {
+    console.log(`UserGrid: ${userGrid}`);
+    console.log(`OriginalGrid: ${originalGrid}`);
 
-    function checkGameOver() {
-        console.log(`UserGrid: ${userGrid}`);
-        console.log(`OriginalGrid: ${originalGrid}`);
+    const correctGuesses = userGrid.reduce((count, shape, index) => {
+      const correct = shape === originalGrid[index] && shapeIndexUserDict[shape] === index;
+      return count + (correct ? 1 : 0);
+    }, 0);
 
-        const correctGuesses = userGrid.reduce((count, shape, index) => {
-            const correct = shape === originalGrid[index] && shapeIndexUserDict[shape] === index;
-            return count + (correct ? 1 : 0);
-        }, 0);
-
-        console.log(`Correct Guesses: ${correctGuesses}`);
-        score = correctGuesses;
-        if (correctGuesses === 9 || seconds <= 0) {
-            showScreen3();
-        }
+    console.log(`Correct Guesses: ${correctGuesses}`);
+    score = correctGuesses;
+    if (correctGuesses === 4 || seconds <= 0) {
+      showScreen3();
     }
-
+  }
 
   function showScreen2() {
     document.getElementById("screen1").style.display = "none";
@@ -253,7 +222,7 @@
     document.getElementById("screen3").style.display = "block";
 
     const scoreElement = document.getElementById("score");
-    scoreElement.innerText = `Your Score: ${score}/9`;
+    scoreElement.innerText = `Your Score: ${score}/4`;
 
     const timerElement = document.getElementById("timer");
     timerElement.innerText = `Time Left: 0.00`;
@@ -261,7 +230,7 @@
 
   function startTimer() {
     let startTime = new Date().getTime();
-    let duration = 30 * 1000; // 30 seconds in milliseconds
+    let duration = 15 * 1000; // 15 seconds in milliseconds
 
     function update() {
       const currentTime = new Date().getTime();
