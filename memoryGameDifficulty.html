@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origami Game</title>
+    <style>
+        .easybutton{
+            background-color: transparent;
+            border-width: 0;
+            font-family: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; height: 100%; position: relative; background: white">
+    <div style="width: 500px; height: 60px; left: 390px; top: 144px; position: absolute; text-align: center; color: black; font-size: 40px; font-family: Inter; font-weight: 700; word-wrap: break-word">
+    Memory Game</div>
+    <div style="width: 230px; height: 82px; left: 525px; top: 608px; position: absolute">
+        <div style="width: 230px; height: 82px; left: 0px; top: 0px; position: absolute; background: #484848; border-radius: 20px"></div>
+        <div style="width: 190px; height: 25px; left: 20px; top: 28px; position: absolute; text-align: center; color: white; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">
+        <button id="playButton" onclick="playGame()">Play</button></div>
+    </div>
+    <div style="width: 400px; height: 40px; left: 440px; top: 293px; position: absolute">
+        <div style="width: 400px; height: 40px; left: 0px; top: 0px; position: absolute; background: white; border-radius: 20px; border: 1px #484848 solid"></div>
+        <div style="width: 330.43px; height: 12.20px; left: 34.78px; top: 13.66px; position: absolute; text-align: center; color: #484848; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">
+        <button id="easybutton" onclick="selectDifficulty('Easy')">Easy</button></div>
+    </div>
+    <div style="width: 400px; height: 40px; left: 440px; top: 363px; position: absolute">
+        <div style="width: 400px; height: 40px; left: 0px; top: 0px; position: absolute; background: white; border-radius: 20px; border: 1px #484848 solid"></div>
+        <div style="width: 330.43px; height: 12.20px; left: 34.78px; top: 13.66px; position: absolute; text-align: center; color: #484848; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">
+        <button id="mediumbutton" onclick="selectDifficulty('Medium')">Medium</button></div>
+    </div>
+    <div style="width: 400px; height: 40px; left: 440px; top: 433px; position: absolute">
+        <div style="width: 400px; height: 40px; left: 0px; top: 0px; position: absolute; background: white; border-radius: 20px; border: 1px #484848 solid"></div>
+        <div style="width: 330.43px; height: 12.20px; left: 34.78px; top: 13.66px; position: absolute; text-align: center; color: #484848; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">
+        <button id="hardbutton" onclick="selectDifficulty('Hard')">Hard</button></div>
+    </div>
+    <div style="width: 1164px; height: 82px; left: 30px; top: 20px; position: absolute">
+        <div style="width: 166px; height: 42px; left: 998px; top: 20px; position: absolute">
+            <div style="width: 166px; height: 42px; left: 0px; top: 0px; position: absolute; background: #484848; border-radius: 20px"></div>
+            <div style="width: 137.13px; height: 12.80px; left: 14px; top: 15px; position: absolute; text-align: center; color: white; font-size: 20px; font-family: Inter; font-weight: 400; word-wrap: break-word">Log in</div>
+        </div>
+        <div style="width: 252px; height: 25px; left: 670px; top: 28px; position: absolute; text-align: right; color: black; font-size: 20px; font-family: Inter; font-weight: 700; word-wrap: break-word">Upgrade to Pro *</div>
+        <img style="width: 82px; height: 82px; left: 0px; top: 0px; position: absolute" src="images/logo.png" />
+    </div>
+    </div>
+    <script>
+        let selectedDifficulty = '';
+
+        function selectDifficulty(difficulty) {
+            selectedDifficulty = difficulty;
+            // Show the play button once a difficulty is selected
+            document.getElementById('playButton').style.display = 'block';
+        }
+
+        function playGame() {
+            if (selectedDifficulty !== '') {
+                // Redirect to the corresponding difficulty level HTML file
+                window.location.href = "memoryGameLevel" + selectedDifficulty + ".html";
+            } else {
+                alert('Please select a difficulty level first.');
+            }
+        }
+    </script>
+</body>
+</html>
