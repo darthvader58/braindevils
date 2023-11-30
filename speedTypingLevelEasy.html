@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      margin: 50px;
+    }
+
+    #word-display {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #input-word {
+      font-size: 18px;
+      padding: 5px;
+      margin-right: 5px;
+      text-align: center;
+    }
+
+    #game-over {
+      font-size: 18px;
+      margin-top: 20px;
+      color: red; /* Adjust the style as needed */
+    }
+
+    #final-score {
+      font-size: 18px;
+      margin-top: 20px;
+      color: green; /* Adjust the style as needed */
+    }
+
+    #typing-speed {
+      font-size: 18px;
+      margin-top: 20px;
+      color: blue; /* Adjust the style as needed */
+    }
+
+    #highest-score {
+      font-size: 18px;
+      margin-top: 20px;
+      color: purple; /* Adjust the style as needed */
+    }
+
+    #timer {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  </style>
+  <title>Typing Challenge Game</title>
+</head>
+<body>
+  <h1>Typing Challenge Game</h1>
+  <p id="word-display"></p>
+  <input type="text" id="input-word" oninput="checkInput()" disabled>
+  <button onclick="startGame()">Start Game</button>
+  <div id="game-over"></div>
+  <div id="final-score"></div>
+  <div id="typing-speed"></div>
+  <div id="highest-score"></div>
+  <p id="timer"></p>
+
+  <script>
+    let words; // Array to store words from the text file
+    let currentWordIndex;
+    let timer;
+    let score;
+    let startTime;
+
+    // Fetch the list of words from the external file
+    fetch('words.txt')  // Change the URL based on your local server setup
+      .then(response => response.text())
+      .then(data => {
+        words = data.split('\n').map(word => word.trim());
+      })
+      .catch(error => console.error('Error fetching words:', error));
+
+    function startGame() {
+      currentWordIndex = getRandomIndex();
+      displayWord();
+      enableInput();
+      score = 0;
+      updateScore();
+      startTime = new Date().getTime();
+      startTimer();
+      clearInput(); // Clear the text box when starting a new game
+    }
+
+    function displayWord() {
+      document.getElementById('word-display').textContent = words[currentWordIndex];
+    }
+
+    function checkInput() {
+      const inputWord = document.getElementById('input-word').value.trim();
+      const targetWord = words[currentWordIndex];
+
+      if (inputWord === targetWord) {
+        // Correct word, increment score
+        score++;
+        updateScore();
+
+        // Get a new random word
+        currentWordIndex = getRandomIndex();
+        displayWord();
+        clearInput();
+      }
+    }
+
+    function startTimer() {
+      let duration = 60 * 1000; // 10 seconds in milliseconds
+
+      function update() {
+        const currentTime = new Date().getTime();
+        const elapsedTime = Math.max(duration - (currentTime - startTime), 0); // Ensure the timer doesn't go into negative
+        const seconds = Math.floor(elapsedTime / 1000);
+        const milliseconds = elapsedTime % 1000;
+
+        document.getElementById('timer').innerHTML = `Time: ${seconds}.${milliseconds} seconds`;
+
+        if (elapsedTime <= 0) {
+          endGame();
+        }
+      }
+
+      timer = setInterval(update, 10); // Update every 10 milliseconds
+    }
+
+    function endGame() {
+      clearInterval(timer);
+      disableInput();
+
+      const endTime = new Date().getTime();
+      const totalTime = (endTime - startTime) / 1000; // Convert to seconds
+      const wordsPerMinute = Math.round((score / totalTime) * 60);
+
+      // Display the final results
+      document.getElementById('game-over').innerHTML = 'Game over!';
+      document.getElementById('final-score').innerHTML = `Your final score is ${score}.`;
+      document.getElementById('typing-speed').innerHTML = `Your estimated typing speed is ${wordsPerMinute} words per minute.`;
+
+      // Update and display the highest score during the user's session
+      const previousHighestScore = localStorage.getItem('highestScore') || 0;
+      const newHighestScore = Math.max(score, previousHighestScore);
+      localStorage.setItem('highestScore', newHighestScore);
+      document.getElementById('highest-score').innerHTML = `Highest Score in this session: ${newHighestScore}`;
+    }
+
+    function getRandomIndex() {
+      return Math.floor(Math.random() * words.length);
+    }
+
+    function enableInput() {
+      document.getElementById('input-word').disabled = false;
+      document.getElementById('input-word').focus();
+    }
+
+    function disableInput() {
+      document.getElementById('input-word').disabled = true;
+    }
+
+    function updateScore() {
+      document.getElementById('final-score').innerHTML = `Score: ${score}`;
+    }
+
+    function clearInput() {
+      document.getElementById('input-word').value = '';
+    }
+  </script>
+  
+</body>
+</html>

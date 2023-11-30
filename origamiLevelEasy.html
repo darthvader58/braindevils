@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        #game-container {
+            text-align: center;
+        }
+
+        #origami-paper {
+            width: 40vw; /* Adjusted the width to 40% of the screen width */
+            height: 40vw; /* Set height equal to width for a square */
+            border: 1px solid #000;
+            position: relative;
+            margin: 20px auto;
+            overflow: hidden; /* Prevents dashed lines from extending beyond the square */
+        }
+
+        .dashed-line {
+            border-bottom: 2.5px dashed #323232; /* Set stroke color to #323232 and increased thickness */
+            position: absolute;
+            width: 100%;
+            transition: background-color 0.3s, border-bottom 0.3s; /* Added transition for smoother color and thickness change */
+        }
+
+        .dashed-line.correct {
+            border-bottom: 4px dashed #4CAF50; /* Slightly thicker and turn green for correct fold */
+        }
+
+        #start-btn, #reset-btn {
+            margin-top: 20px;
+        }
+
+        #progress-bar-container {
+            margin-top: 20px;
+            width: 30%;
+            border: 1px solid #000; /* Border added to the progress bar */
+            overflow: hidden; /* Prevents progress bar from extending beyond its container */
+            position: relative;
+        }
+
+        #progress-bar {
+            height: 20px;
+            background-color: #4CAF50;
+            width: 0;
+        }
+
+        #timer {
+            margin-top: 10px;
+        }
+
+        /* Modify the existing style for the "Origami Shape Achieved!" text */
+        #origami-paper.correct::after {
+            content: 'Origami Shape Achieved!';
+            font-size: 1.5em; /* Adjust the font size as needed */
+            display: flex;
+            align-items: center; /* Vertically center align */
+            justify-content: center; /* Horizontally center align */
+            height: 100%; /* Make the text container take full height of the origami container */
+            margin-top: 20px; /* Add some space between the text and the border */
+        }
+
+    </style>
+    <title>Origami Game</title>
+</head>
+<body>
+    <div float:right><img id="origami-image" src="" alt="Origami Shape"></div>
+    <div id="game-container">
+        <div id="origami-paper"></div>
+        <button id="start-btn" onclick="startGame()">Start Game</button>
+        <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="timer">00:00:00</div>
+        <button id="reset-btn" onclick="resetGame()" style="display: none;">Reset</button>
+    </div>
+    <script>
+        const origamiPaper = document.getElementById('origami-paper');
+        const startBtn = document.getElementById('start-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let sequence = []; // Pre-defined sequence of folds
+        let userClicks = [];
+        let timerInterval;
+
+        function startGame() {
+            // Reset the game
+            origamiPaper.innerHTML = '';
+            userClicks = [];
+            resetProgressBar();
+            resetBtn.style.display = 'none';
+
+            // Generate random dashed lines
+            generateDashedLines();
+
+            // Show origami shape and start timer
+            showOrigamiShape();
+            startTimer();
+
+            displayRandomOrigamiImage()
+        }
+
+        function displayRandomOrigamiImage() {
+            const origamiImage = document.getElementById('origami-image');
+            const imagesFolder = 'images/origamiShapes';
+
+            // Get a list of all image files in the folder
+            fetch(`origami_images.json`)
+                .then(response => response.json())
+                .then(images => {
+                    // Randomly select an image from the list
+                    const randomIndex = Math.floor(Math.random() * images.length);
+                    const randomImage = images[randomIndex];
+
+                    // Set the source of the image element with the correct path
+                    origamiImage.src = `${imagesFolder}/${randomImage}`;
+                })
+                .catch(error => console.error('Error loading images', error));
+        }
+
+
+        function generateDashedLines() {
+            for (let i = 0; i < 5; i++) { // Number of folds
+                const dashedLine = document.createElement('div');
+                dashedLine.className = 'dashed-line';
+                const angle = Math.floor(Math.random() * 360);
+                dashedLine.style.transform = `rotate(${angle}deg)`;
+                const top = Math.floor(Math.random() * 180); // Random position within the paper
+                dashedLine.style.top = `${top}px`;
+                origamiPaper.appendChild(dashedLine);
+                sequence.push(i);
+            }
+        }
+
+        function showOrigamiShape() {
+            // Simulate origami shape display
+            origamiPaper.className = ''; // Remove any previous styling
+
+            // Enable progressBar
+            progressBar.style.width = '0%';
+
+            // Check user input
+            origamiPaper.addEventListener('click', handleDashedLineClick);
+
+            // Show timer
+            timerDisplay.style.display = 'block';
+
+            // Hide start button
+            startBtn.style.display = 'none';
+
+            // Show reset button
+            resetBtn.style.display = 'inline-block';
+        }
+
+        function startTimer() {
+            let startTime = new Date().getTime();
+
+            timerInterval = setInterval(() => {
+                const currentTime = new Date().getTime();
+                const elapsedTime = currentTime - startTime;
+                updateTimer(elapsedTime);
+            }, 10);
+        }
+
+        function updateTimer(elapsedTime) {
+            const minutes = Math.floor(elapsedTime / (1000 * 60));
+            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+
+            const formattedTime = `${padNumber(minutes)}:${padNumber(seconds)}:${padNumber(milliseconds)}`;
+            timerDisplay.textContent = formattedTime;
+        }
+
+        function padNumber(number) {
+            return number.toString().padStart(2, '0');
+        }
+
+        function handleDashedLineClick(event) {
+            if (event.target.className === 'dashed-line') {
+                const index = Array.from(origamiPaper.children).indexOf(event.target);
+
+                // Check if the line is in the correct sequence and follows the correct click sequence
+                if (
+                    userClicks.length < sequence.length &&
+                    index === sequence[userClicks.length] &&
+                    arraysEqual(sequence.slice(0, userClicks.length + 1), userClicks.concat(index))
+                ) {
+                    // Click the line
+                    clickLine(index);
+
+                    // Check if the sequence is correct
+                    if (arraysEqual(sequence, userClicks)) {
+                        clearInterval(timerInterval);
+                        origamiPaper.removeEventListener('click', handleDashedLineClick);
+                        origamiPaper.className = 'correct';
+                        origamiPaper.innerHTML = '';
+                        console.log('Clicked line ${index} : correct order')
+                    }
+
+                    // Update progressBar
+                    const progressPercentage = (userClicks.length / sequence.length) * 100;
+                    progressBar.style.width = `${progressPercentage}%`;
+                } else {
+                    console.log(`Clicked line ${index} out of order`);
+                }
+            }
+        }
+
+        function clickLine(index) {
+            userClicks.push(index);
+            // Turn the line green and slightly thicker when correct sequence is clicked
+            origamiPaper.children[index].classList.add('correct');
+        }
+
+        function arraysEqual(arr1, arr2) {
+            return JSON.stringify(arr1) === JSON.stringify(arr2);
+        }
+
+        function resetGame() {
+            clearInterval(timerInterval);
+            origamiPaper.innerHTML = '';
+            origamiPaper.className = '';
+            userClicks = [];
+            sequence = [];
+            resetProgressBar();
+            timerDisplay.style.display = 'none';
+            startBtn.style.display = 'inline-block';
+            resetBtn.style.display = 'none';
+        }
+
+        function resetProgressBar() {
+            progressBar.style.width = '0%';
+        }
+    </script>
+</body>
+</html>
