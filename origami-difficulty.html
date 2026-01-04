@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Origami Master - Select Difficulty | BrainDevils</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="images/logo.png">
+</head>
+<body>
+    <div class="page-wrapper">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <a href="index.html" class="logo">
+                        <img src="images/logo.png" alt="BrainDevils Logo">
+                        <span>BrainDevils</span>
+                    </a>
+                    <nav class="nav-actions">
+                        <span class="upgrade-text">Upgrade to Pro ✨</span>
+                        <a href="#" class="btn-login">Log in</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <div class="text-center mb-xl">
+                    <h1 class="title-section">🎨 Origami Master</h1>
+                    <p class="subtitle">
+                        Choose your difficulty level and start creating beautiful origami shapes through precise folding sequences.
+                    </p>
+                </div>
+
+                <div class="difficulty-container fade-in">
+                    <form id="difficultyForm">
+                        <div class="difficulty-options">
+                            <label class="difficulty-option easy" for="easy">
+                                <input type="radio" id="easy" name="difficulty" value="easy">
+                                <div class="difficulty-label">
+                                    <div>
+                                        <div class="difficulty-name">Beginner</div>
+                                        <div class="difficulty-description">Simple shapes with 3-4 folds • Perfect for learning</div>
+                                    </div>
+                                    <div class="difficulty-indicator">
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="difficulty-option medium" for="medium">
+                                <input type="radio" id="medium" name="difficulty" value="medium">
+                                <div class="difficulty-label">
+                                    <div>
+                                        <div class="difficulty-name">Intermediate</div>
+                                        <div class="difficulty-description">Moderate complexity with 5-7 folds • Good challenge</div>
+                                    </div>
+                                    <div class="difficulty-indicator">
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                    </div>
+                                </div>
+                            </label>
+
+                            <label class="difficulty-option hard" for="hard">
+                                <input type="radio" id="hard" name="difficulty" value="hard">
+                                <div class="difficulty-label">
+                                    <div>
+                                        <div class="difficulty-name">Expert</div>
+                                        <div class="difficulty-description">Complex shapes with 8+ folds • Master level</div>
+                                    </div>
+                                    <div class="difficulty-indicator">
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                        <div class="difficulty-dot"></div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn-primary" id="startButton" disabled>
+                                Start Origami Challenge
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById('difficultyForm');
+        const startButton = document.getElementById('startButton');
+        const difficultyOptions = document.querySelectorAll('input[name="difficulty"]');
+
+        // Handle difficulty selection
+        difficultyOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.difficulty-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to current option
+                this.closest('.difficulty-option').classList.add('selected');
+                
+                // Enable start button
+                startButton.disabled = false;
+                startButton.classList.add('pulse');
+                
+                // Remove pulse after animation
+                setTimeout(() => {
+                    startButton.classList.remove('pulse');
+                }, 2000);
+            });
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const selectedDifficulty = document.querySelector('input[name="difficulty"]:checked');
+            if (selectedDifficulty) {
+                // Add loading state
+                startButton.textContent = 'Loading...';
+                startButton.classList.add('loading');
+                
+                // Redirect after short delay for better UX
+                setTimeout(() => {
+                    window.location.href = `origami-${selectedDifficulty.value}.html`;
+                }, 800);
+            }
+        });
+
+        // Add entrance animation
+        setTimeout(() => {
+            document.querySelector('.difficulty-container').classList.add('fade-in');
+        }, 200);
+    </script>
+</body>
+</html>
