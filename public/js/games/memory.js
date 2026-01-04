@@ -107,7 +107,8 @@ class MemoryGame {
               <div class="result-value" id="totalScore">0</div>
             </div>
           </div>
-          <button class="btn-primary" onclick="memoryGame.reset()">Play Again</button>
+          <button class="btn-primary" onclick="window.memoryGame.reset()">Play Again</button>
+          <button class="btn-secondary" onclick="app.showDifficultyModal('memory')">Change Difficulty</button>
         </div>
       </div>
     `;

@@ -106,14 +106,17 @@ class App {
       case 'origami':
         gameTitle.textContent = `Origami Master - ${difficultyText}`;
         this.currentGame = new OrigamiGame(difficulty);
+        window.origamiGame = this.currentGame;
         break;
       case 'typing':
         gameTitle.textContent = `Speed Typing - ${difficultyText}`;
         this.currentGame = new SpeedTypingGame(difficulty);
+        window.typingGame = this.currentGame;
         break;
       case 'memory':
         gameTitle.textContent = `Memory Challenge - ${difficultyText}`;
         this.currentGame = new MemoryGame(difficulty);
+        window.memoryGame = this.currentGame;
         break;
     }
     
