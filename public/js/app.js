@@ -11,12 +11,18 @@ class App {
     this.updateGoogleClientId();
   }
 
-  updateGoogleClientId() {
-    // In production, this should be set via environment variables
-    const clientId = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with actual client ID
-    const onloadDiv = document.getElementById('g_id_onload');
-    if (onloadDiv) {
-      onloadDiv.setAttribute('data-client_id', clientId);
+  async updateGoogleClientId() {
+    try {
+      // Fetch Google Client ID from server
+      const response = await fetch('/api/config/google');
+      const config = await response.json();
+      
+      const onloadDiv = document.getElementById('g_id_onload');
+      if (onloadDiv && config.clientId) {
+        onloadDiv.setAttribute('data-client_id', config.clientId);
+      }
+    } catch (error) {
+      console.error('Failed to load Google Client ID:', error);
     }
   }
 

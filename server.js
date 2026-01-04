@@ -341,6 +341,13 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Get Google Client ID for frontend
+app.get('/api/config/google', (req, res) => {
+  res.json({ 
+    clientId: process.env.GOOGLE_CLIENT_ID 
+  });
+});
+
 // Serve static files for any non-API routes
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
