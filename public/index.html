@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrainDevils - Professional Brain Training</title>
+    <title>BrainDevils - FMS Training</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,11 +20,20 @@
                         <img src="images/logo.png" alt="BrainDevils">
                         <span>BrainDevils</span>
                     </a>
-                    <nav class="nav-menu">
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+
+                    <!-- Navigation Menu -->
+                    <nav class="nav-menu" id="navMenu">
                         <a href="#" onclick="selectGame('origami')" class="nav-link">Origami</a>
                         <a href="#" onclick="selectGame('typing')" class="nav-link">Speed Typing</a>
                         <a href="#" onclick="selectGame('memory')" class="nav-link">Memory</a>
                     </nav>
+                    
                     <nav class="nav">
                         <button id="themeToggle" class="theme-toggle" title="Toggle theme">
                             <svg id="themeIcon" viewBox="0 0 24 24" fill="currentColor">

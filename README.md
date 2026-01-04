@@ -1,4 +1,4 @@
-# BrainDevils - Professional Brain Training Games
+# BrainDevils - Fine Motor Skills (FMS) Training Games
 
 A modern, professional brain training platform featuring three engaging games: Origami Master, Speed Typing, and Memory Challenge. Built with vanilla JavaScript, Node.js, Express, and MongoDB with Google OAuth integration.
 
@@ -178,47 +178,3 @@ braindevils-games/
 3. Add game card to main menu in `index.html`
 4. Update `app.js` to handle new game type
 5. Add game-specific styles to CSS
-
-## Security Features
-
-- **Helmet**: Security headers
-- **CORS**: Cross-origin resource sharing protection
-- **Rate Limiting**: API request throttling
-- **JWT**: Secure token-based authentication
-- **Input Validation**: Server-side validation
-- **Environment Variables**: Sensitive data protection
-
-## Performance Optimizations
-
-- **Efficient DOM Manipulation**: Minimal reflows and repaints
-- **Event Delegation**: Optimized event handling
-- **Lazy Loading**: Games loaded on demand
-- **Caching**: Browser and server-side caching
-- **Compression**: Gzip compression for static assets
-
-## Browser Support
-
-- Chrome 70+
-- Firefox 65+
-- Safari 12+
-- Edge 79+
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-MIT License - see LICENSE file for details
-
-## Support
-
-For support, please open an issue on GitHub or contact the development team.
-
----
-
-Built with ❤️ by the BrainDevils Team
