@@ -6,9 +6,9 @@ class App {
     this.init();
   }
 
-  init() {
+  async init() {
     this.setupEventListeners();
-    this.updateGoogleClientId();
+    await this.updateGoogleClientId();
   }
 
   async updateGoogleClientId() {
@@ -20,6 +20,14 @@ class App {
       const onloadDiv = document.getElementById('g_id_onload');
       if (onloadDiv && config.clientId) {
         onloadDiv.setAttribute('data-client_id', config.clientId);
+        
+        // Initialize Google Sign-In after setting client ID
+        if (window.google && window.google.accounts) {
+          window.google.accounts.id.initialize({
+            client_id: config.clientId,
+            callback: window.handleCredentialResponse
+          });
+        }
       }
     } catch (error) {
       console.error('Failed to load Google Client ID:', error);

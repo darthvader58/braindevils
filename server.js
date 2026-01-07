@@ -348,6 +348,44 @@ app.get('/api/config/google', (req, res) => {
   });
 });
 
+// Admin endpoint to view user scores (for development)
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    const users = await User.find({}).select('name email gameStats createdAt lastLogin');
+    const recentSessions = await GameSession.find({})
+      .populate('userId', 'name email')
+      .sort({ completedAt: -1 })
+      .limit(20);
+    
+    const totalSessions = await GameSession.countDocuments();
+    
+    res.json({
+      users: users.map(user => ({
+        name: user.name,
+        email: user.email,
+        joinDate: user.createdAt,
+        lastLogin: user.lastLogin,
+        stats: user.gameStats
+      })),
+      recentSessions: recentSessions.map(session => ({
+        playerName: session.userId.name,
+        gameType: session.gameType,
+        difficulty: session.difficulty,
+        score: session.score,
+        accuracy: session.accuracy,
+        duration: session.duration,
+        completedAt: session.completedAt
+      })),
+      summary: {
+        totalUsers: users.length,
+        totalSessions
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user data' });
+  }
+});
+
 // Serve static files for any non-API routes
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {

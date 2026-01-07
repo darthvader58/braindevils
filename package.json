@@ -13,27 +13,34 @@
     "vercel-build": "echo 'Build complete'"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.6.3",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "jsonwebtoken": "^9.0.2",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
     "google-auth-library": "^9.2.0",
-    "bcryptjs": "^2.4.3",
     "helmet": "^7.1.0",
-    "express-rate-limit": "^7.1.5"
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^7.0.0",
+    "mongoose": "^7.6.3"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^8.2.2",
-    "live-server": "^1.2.2",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-    "typescript": "^5.2.2",
     "@types/node": "^20.8.7",
-    "jest": "^29.7.0"
+    "concurrently": "^8.2.2",
+    "jest": "^29.7.0",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.2.2",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
-  "keywords": ["brain-training", "games", "memory", "typing", "origami"],
+  "keywords": [
+    "brain-training",
+    "games",
+    "memory",
+    "typing",
+    "origami"
+  ],
   "author": "Shashwat Raj",
   "license": "MIT",
   "engines": {
