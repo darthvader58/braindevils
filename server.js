@@ -120,6 +120,14 @@ const authenticateToken = (req, res, next) => {
 app.post('/api/auth/google', async (req, res) => {
   try {
     const { token } = req.body;
+    console.log('Received Google auth request');
+    
+    if (!token) {
+      console.error('No token provided');
+      return res.status(400).json({ error: 'No token provided' });
+    }
+
+    console.log('Verifying Google token...');
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -127,10 +135,12 @@ app.post('/api/auth/google', async (req, res) => {
 
     const payload = ticket.getPayload();
     const { sub: googleId, email, name, picture: avatar } = payload;
+    console.log('Google token verified for user:', email);
 
     let user = await User.findOne({ googleId });
     
     if (!user) {
+      console.log('Creating new user:', email);
       user = new User({
         googleId,
         email,
@@ -139,6 +149,7 @@ app.post('/api/auth/google', async (req, res) => {
       });
       await user.save();
     } else {
+      console.log('Updating existing user:', email);
       user.lastLogin = new Date();
       await user.save();
     }
@@ -149,6 +160,7 @@ app.post('/api/auth/google', async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log('Login successful for:', user.email);
     res.json({
       token: jwtToken,
       user: {
@@ -160,8 +172,9 @@ app.post('/api/auth/google', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Google auth error:', error);
-    res.status(400).json({ error: 'Invalid token' });
+    console.error('Google auth error:', error.message);
+    console.error('Full error:', error);
+    res.status(400).json({ error: `Authentication failed: ${error.message}` });
   }
 });
 

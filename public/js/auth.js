@@ -89,6 +89,7 @@ class AuthManager {
 
   async handleGoogleLogin(credential) {
     try {
+      console.log('Sending Google credential to server...');
       const response = await fetch('/api/auth/google', {
         method: 'POST',
         headers: {
@@ -97,8 +98,11 @@ class AuthManager {
         body: JSON.stringify({ token: credential })
       });
 
+      console.log('Server response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('Login successful:', data.user.name);
         this.token = data.token;
         this.user = data.user;
         
@@ -106,11 +110,13 @@ class AuthManager {
         this.updateUI();
         this.hideLoginModal();
       } else {
-        throw new Error('Login failed');
+        const errorData = await response.json();
+        console.error('Login failed with status:', response.status, errorData);
+        throw new Error(`Login failed: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Google login failed:', error);
-      alert('Login failed. Please try again.');
+      alert(`Login failed: ${error.message}. Please try again.`);
     }
   }
 
