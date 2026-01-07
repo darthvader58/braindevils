@@ -6,32 +6,8 @@ class App {
     this.init();
   }
 
-  async init() {
+  init() {
     this.setupEventListeners();
-    await this.updateGoogleClientId();
-  }
-
-  async updateGoogleClientId() {
-    try {
-      // Fetch Google Client ID from server
-      const response = await fetch('/api/config/google');
-      const config = await response.json();
-      
-      const onloadDiv = document.getElementById('g_id_onload');
-      if (onloadDiv && config.clientId) {
-        onloadDiv.setAttribute('data-client_id', config.clientId);
-        
-        // Initialize Google Sign-In after setting client ID
-        if (window.google && window.google.accounts) {
-          window.google.accounts.id.initialize({
-            client_id: config.clientId,
-            callback: window.handleCredentialResponse
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load Google Client ID:', error);
-    }
   }
 
   setupEventListeners() {

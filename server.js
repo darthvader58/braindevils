@@ -341,13 +341,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Get Google Client ID for frontend
-app.get('/api/config/google', (req, res) => {
-  res.json({ 
-    clientId: process.env.GOOGLE_CLIENT_ID 
-  });
-});
-
 // Admin endpoint to view user scores (for development)
 app.get('/api/admin/users', async (req, res) => {
   try {
