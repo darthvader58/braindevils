@@ -198,7 +198,6 @@ class MemoryGame {
 
   startRecallPhase() {
     this.currentPhase = 'recall';
-    this.timeLeft = this.recallTime;
     this.updatePhase();
     
     // Hide shapes and show input fields
@@ -228,9 +227,7 @@ class MemoryGame {
       if (firstInput) firstInput.focus();
     }
     
-    this.startTimer(() => {
-      this.complete();
-    });
+    // No timer - game only completes when all inputs are filled
   }
 
   handleInput(event) {
@@ -351,12 +348,11 @@ class MemoryGame {
     
     const totalCells = this.gridSize * this.gridSize;
     const accuracy = Math.round((this.score / totalCells) * 100);
-    const timeBonus = Math.max(0, Math.floor(this.timeLeft));
-    const totalScore = (this.score * 25) + timeBonus;
+    const totalScore = this.score * 25; // No time bonus since there's no timer
     
     document.getElementById('finalScore').textContent = `${this.score}/${totalCells}`;
     document.getElementById('finalAccuracy').textContent = accuracy + '%';
-    document.getElementById('timeBonus').textContent = timeBonus;
+    document.getElementById('timeBonus').textContent = '0'; // No time bonus
     document.getElementById('totalScore').textContent = totalScore;
     document.getElementById('resultsPanel').style.display = 'block';
     
@@ -371,7 +367,7 @@ class MemoryGame {
 
   async saveGameSession(totalScore, accuracy) {
     try {
-      const duration = this.memoryTime + this.recallTime - this.timeLeft;
+      const duration = this.memoryTime; // Only count memorization time
       await api.saveGameSession({
         gameType: 'memoryGame',
         difficulty: this.difficulty,
@@ -382,7 +378,7 @@ class MemoryGame {
           gridSize: this.gridSize,
           correctAnswers: this.score,
           totalQuestions: this.gridSize * this.gridSize,
-          timeBonus: Math.max(0, Math.floor(this.timeLeft))
+          timeBonus: 0 // No time bonus
         }
       });
     } catch (error) {
@@ -424,7 +420,7 @@ class MemoryGame {
         break;
       case 'recall':
         phaseTitle.textContent = 'Recall Phase';
-        phaseDescription.textContent = 'Enter the numbers corresponding to each shape position.';
+        phaseDescription.textContent = 'Enter the numbers corresponding to each shape position. Take your time!';
         break;
       case 'results':
         phaseTitle.textContent = 'Results';
@@ -434,11 +430,20 @@ class MemoryGame {
     
     // Update game stats in header
     const gameStats = document.getElementById('gameStats');
-    gameStats.innerHTML = `
-      Phase: ${this.currentPhase} | 
-      Grid: ${this.gridSize}x${this.gridSize} | 
-      Score: ${this.score}
-    `;
+    if (this.currentPhase === 'recall') {
+      // No timer during recall phase
+      gameStats.innerHTML = `
+        Phase: ${this.currentPhase} | 
+        Grid: ${this.gridSize}x${this.gridSize} | 
+        Score: ${this.score}
+      `;
+    } else {
+      gameStats.innerHTML = `
+        Phase: ${this.currentPhase} | 
+        Grid: ${this.gridSize}x${this.gridSize} | 
+        Score: ${this.score}
+      `;
+    }
   }
 
   reset() {
