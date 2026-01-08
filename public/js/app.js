@@ -11,7 +11,6 @@ class App {
   }
 
   setupEventListeners() {
-    // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const navMenu = document.getElementById('navMenu');
     
@@ -21,7 +20,6 @@ class App {
         navMenu.classList.toggle('active');
       });
 
-      // Close mobile menu when clicking on a nav link
       document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
           mobileMenuBtn.classList.remove('active');
@@ -29,7 +27,6 @@ class App {
         });
       });
 
-      // Close mobile menu when clicking outside
       document.addEventListener('click', (e) => {
         if (!mobileMenuBtn.contains(e.target) && !navMenu.contains(e.target)) {
           mobileMenuBtn.classList.remove('active');
@@ -38,17 +35,14 @@ class App {
       });
     }
 
-    // Back button
     document.getElementById('backBtn').addEventListener('click', () => {
       this.showMainMenu();
     });
 
-    // Difficulty modal
     document.getElementById('closeDifficultyModal').addEventListener('click', () => {
       this.hideDifficultyModal();
     });
 
-    // Difficulty selection
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const difficulty = e.currentTarget.dataset.difficulty;
@@ -57,7 +51,6 @@ class App {
       });
     });
 
-    // Close modals when clicking outside
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('modal')) {
         e.target.style.display = 'none';
@@ -69,7 +62,6 @@ class App {
     document.getElementById('gameContainer').style.display = 'none';
     document.querySelector('.main').style.display = 'block';
     
-    // Clean up current game
     if (this.currentGame) {
       if (typeof this.currentGame.cleanup === 'function') {
         this.currentGame.cleanup();
@@ -87,7 +79,6 @@ class App {
   showDifficultyModal(gameType) {
     this.currentGameType = gameType;
     
-    // Update modal content based on game type
     const modal = document.getElementById('difficultyModal');
     const title = modal.querySelector('h2');
     
@@ -114,11 +105,9 @@ class App {
     this.currentGameType = gameType;
     this.currentDifficulty = difficulty;
     
-    // Hide main menu and show game container
     document.querySelector('.main').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'block';
     
-    // Update game title
     const gameTitle = document.getElementById('gameTitle');
     const difficultyText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
     
@@ -140,16 +129,13 @@ class App {
         break;
     }
     
-    // Initialize the game
     if (this.currentGame && typeof this.currentGame.init === 'function') {
       this.currentGame.init();
     }
     
-    // Clear game stats initially
     document.getElementById('gameStats').innerHTML = 'Ready to play';
   }
 
-  // Method to handle game completion and stats update
   async updateUserStats() {
     if (auth.isAuthenticated()) {
       try {
@@ -163,18 +149,15 @@ class App {
   }
 }
 
-// Global functions for game selection
 function selectGame(gameType) {
   app.showDifficultyModal(gameType);
 }
 
-// Initialize app when DOM is loaded
 let app;
 document.addEventListener('DOMContentLoaded', () => {
   app = new App();
 });
 
-// Global game instances (will be set when games are started)
 window.balanceGame = null;
 window.typingGame = null;
 window.memoryGame = null;
