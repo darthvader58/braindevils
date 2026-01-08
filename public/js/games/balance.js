@@ -25,10 +25,10 @@ class BalanceGame {
 
   getDifficultyStickLength() {
     switch (this.difficulty) {
-      case 'easy': return 100; // Reduced from 300 to 100 (300 * 0.333)
-      case 'medium': return 67; // Reduced from 200 to 67 (200 * 0.333)
-      case 'hard': return 40; // Reduced from 120 to 40 (120 * 0.333)
-      default: return 100;
+      case 'easy': return 200; // Reduced from 300 to 100 (300 * 0.333)
+      case 'medium': return 130; // Reduced from 200 to 67 (200 * 0.333)
+      case 'hard': return 75; // Reduced from 120 to 40 (120 * 0.333)
+      default: return 150;
     }
   }
 

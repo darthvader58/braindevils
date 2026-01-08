@@ -192,12 +192,10 @@ app.get('/api/user/profile', authenticateToken, async (req, res) => {
   }
 });
 
-// Save game session
 app.post('/api/game/session', authenticateToken, async (req, res) => {
   try {
     const { gameType, difficulty, score, duration, accuracy, gameData } = req.body;
 
-    // Create game session
     const session = new GameSession({
       userId: req.user.userId,
       gameType,
@@ -209,7 +207,6 @@ app.post('/api/game/session', authenticateToken, async (req, res) => {
     });
     await session.save();
 
-    // Update user stats
     const user = await User.findById(req.user.userId);
     const gameStats = user.gameStats[gameType];
 
@@ -266,7 +263,6 @@ app.post('/api/game/session', authenticateToken, async (req, res) => {
   }
 });
 
-// Get game history
 app.get('/api/game/history/:gameType?', authenticateToken, async (req, res) => {
   try {
     const { gameType } = req.params;
@@ -299,7 +295,6 @@ app.get('/api/game/history/:gameType?', authenticateToken, async (req, res) => {
   }
 });
 
-// Get leaderboard
 app.get('/api/leaderboard/:gameType', async (req, res) => {
   try {
     const { gameType } = req.params;
@@ -339,15 +334,12 @@ app.get('/api/leaderboard/:gameType', async (req, res) => {
   }
 });
 
-// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Admin endpoint to view user scores (for development)
 app.get('/api/admin/users', async (req, res) => {
   try {
     const users = await User.find({}).select('name email gameStats createdAt lastLogin');
@@ -385,7 +377,6 @@ app.get('/api/admin/users', async (req, res) => {
   }
 });
 
-// Serve static files for any non-API routes
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
