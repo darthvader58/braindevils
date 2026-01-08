@@ -71,6 +71,9 @@ class App {
     
     // Clean up current game
     if (this.currentGame) {
+      if (typeof this.currentGame.cleanup === 'function') {
+        this.currentGame.cleanup();
+      }
       if (typeof this.currentGame.reset === 'function') {
         this.currentGame.reset();
       }
@@ -89,8 +92,8 @@ class App {
     const title = modal.querySelector('h2');
     
     switch (gameType) {
-      case 'origami':
-        title.textContent = 'Select Origami Difficulty';
+      case 'balance':
+        title.textContent = 'Select Balance Difficulty';
         break;
       case 'typing':
         title.textContent = 'Select Typing Difficulty';
@@ -120,10 +123,10 @@ class App {
     const difficultyText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
     
     switch (gameType) {
-      case 'origami':
-        gameTitle.textContent = `Origami Master - ${difficultyText}`;
-        this.currentGame = new OrigamiGame(difficulty);
-        window.origamiGame = this.currentGame;
+      case 'balance':
+        gameTitle.textContent = `Balance It - ${difficultyText}`;
+        this.currentGame = new BalanceGame(difficulty);
+        window.balanceGame = this.currentGame;
         break;
       case 'typing':
         gameTitle.textContent = `Speed Typing - ${difficultyText}`;
@@ -172,6 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Global game instances (will be set when games are started)
-window.origamiGame = null;
+window.balanceGame = null;
 window.typingGame = null;
 window.memoryGame = null;

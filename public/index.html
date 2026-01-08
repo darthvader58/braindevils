@@ -29,7 +29,7 @@
 
                     <!-- Navigation Menu -->
                     <nav class="nav-menu" id="navMenu">
-                        <a href="#" onclick="selectGame('origami')" class="nav-link">Origami</a>
+                        <a href="#" onclick="selectGame('balance')" class="nav-link">Balance It</a>
                         <a href="#" onclick="selectGame('typing')" class="nav-link">Speed Typing</a>
                         <a href="#" onclick="selectGame('memory')" class="nav-link">Memory</a>
                     </nav>
@@ -60,15 +60,15 @@
                 <!-- Games Grid -->
                 <section class="games">
                     <div class="games-grid">
-                        <div class="game-card" data-game="origami">
+                        <div class="game-card" data-game="balance">
                             <div class="game-icon">
                                 <svg viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
                                 </svg>
                             </div>
-                            <h3>Origami Master</h3>
-                            <p>Follow traditional folding patterns to create paper art</p>
-                            <button class="btn-play" onclick="selectGame('origami')">Play</button>
+                            <h3>Balance It</h3>
+                            <p>Keep the ball balanced on a stick as long as possible</p>
+                            <button class="btn-play" onclick="selectGame('balance')">Play</button>
                         </div>
 
                         <div class="game-card" data-game="typing">
@@ -100,8 +100,8 @@
                     <h2>Your Progress</h2>
                     <div class="stats-grid">
                         <div class="stat-card">
-                            <h3>Origami</h3>
-                            <div class="stat-value" id="origamiStats">0 shapes completed</div>
+                            <h3>Balance It</h3>
+                            <div class="stat-value" id="balanceStats">0s best time</div>
                         </div>
                         <div class="stat-card">
                             <h3>Speed Typing</h3>
@@ -181,7 +181,7 @@
     <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/games/origami.js"></script>
+    <script src="js/games/balance.js"></script>
     <script src="js/games/typing.js"></script>
     <script src="js/games/memory.js"></script>
     <script src="js/app.js"></script>

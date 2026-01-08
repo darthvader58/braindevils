@@ -1781,11 +1781,77 @@ body::after {
   height: 40px;
 }
 
-.reference-number {
-  font-weight: 700;
-  font-size: 1.125rem;
+/* Balance Game - New Canvas-based Design */
+.balance-workspace {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.game-info {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .game-info {
+  background: rgba(51, 65, 85, 0.1);
+  border: 1px solid rgba(71, 85, 105, 0.2);
+}
+
+.balance-game-area {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .balance-game-area {
+  background: rgba(51, 65, 85, 0.1);
+  border: 1px solid rgba(71, 85, 105, 0.2);
+}
+
+#balanceCanvas {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  cursor: crosshair;
+  transition: var(--transition);
+  box-shadow: var(--shadow-md);
+  max-width: 100%;
+  height: auto;
+}
+
+[data-theme="dark"] #balanceCanvas {
+  background: linear-gradient(135deg, #1e293b, #334155);
+}
+
+#balanceCanvas:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.control-instructions {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.control-instructions p {
+  margin: 0.5rem 0;
+}
+
+.control-instructions strong {
   color: var(--text-primary);
-  font-family: 'Courier New', monospace;
 }
 
 /* Game Controls */

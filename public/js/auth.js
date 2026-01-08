@@ -142,8 +142,8 @@ class AuthManager {
 
       // Update stats
       const stats = this.user.gameStats;
-      document.getElementById('origamiStats').textContent = 
-        `${stats.origami.completedShapes} shapes completed`;
+      document.getElementById('balanceStats').textContent = 
+        `${stats.balance?.bestTime || 0}s best time`;
       document.getElementById('typingStats').textContent = 
         `${stats.speedTyping.bestWPM} WPM best`;
       document.getElementById('memoryStats').textContent = 

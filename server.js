@@ -11,7 +11,6 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security middleware
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -30,20 +29,17 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100
 });
 app.use(limiter);
 
 app.use(express.json());
 app.use(express.static('public'));
 
-// Google OAuth client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/braindevils', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -58,12 +54,12 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: Date.now },
   gameStats: {
-    origami: {
+    balance: {
       gamesPlayed: { type: Number, default: 0 },
       bestTime: { type: Number, default: 0 },
       totalScore: { type: Number, default: 0 },
-      averageAccuracy: { type: Number, default: 0 },
-      completedShapes: { type: Number, default: 0 }
+      averageTime: { type: Number, default: 0 },
+      maxSensitivity: { type: Number, default: 0 }
     },
     speedTyping: {
       gamesPlayed: { type: Number, default: 0 },
@@ -87,7 +83,7 @@ const User = mongoose.model('User', userSchema);
 // Game Session Schema
 const gameSessionSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  gameType: { type: String, enum: ['origami', 'speedTyping', 'memoryGame'], required: true },
+  gameType: { type: String, enum: ['balance', 'speedTyping', 'memoryGame'], required: true },
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], required: true },
   score: { type: Number, required: true },
   duration: { type: Number, required: true }, // in seconds
@@ -98,7 +94,6 @@ const gameSessionSchema = new mongoose.Schema({
 
 const GameSession = mongoose.model('GameSession', gameSessionSchema);
 
-// Middleware to verify JWT token
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -114,9 +109,6 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Routes
-
-// Google OAuth login
 app.post('/api/auth/google', async (req, res) => {
   try {
     const { token } = req.body;
@@ -178,7 +170,6 @@ app.post('/api/auth/google', async (req, res) => {
   }
 });
 
-// Get user profile
 app.get('/api/user/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId);
@@ -226,13 +217,15 @@ app.post('/api/game/session', authenticateToken, async (req, res) => {
     gameStats.totalScore += score;
 
     switch (gameType) {
-      case 'origami':
-        if (duration > 0 && (gameStats.bestTime === 0 || duration < gameStats.bestTime)) {
-          gameStats.bestTime = duration;
+      case 'balance':
+        const timesSurvived = gameData.timesSurvived || duration;
+        if (timesSurvived > gameStats.bestTime) {
+          gameStats.bestTime = timesSurvived;
         }
-        gameStats.averageAccuracy = ((gameStats.averageAccuracy * (gameStats.gamesPlayed - 1)) + accuracy) / gameStats.gamesPlayed;
-        if (accuracy === 100) {
-          gameStats.completedShapes += 1;
+        gameStats.averageTime = ((gameStats.averageTime * (gameStats.gamesPlayed - 1)) + timesSurvived) / gameStats.gamesPlayed;
+        const maxSensitivity = gameData.maxSensitivity || 1;
+        if (maxSensitivity > gameStats.maxSensitivity) {
+          gameStats.maxSensitivity = maxSensitivity;
         }
         break;
 
@@ -314,8 +307,8 @@ app.get('/api/leaderboard/:gameType', async (req, res) => {
 
     let sortField;
     switch (gameType) {
-      case 'origami':
-        sortField = 'gameStats.origami.completedShapes';
+      case 'balance':
+        sortField = 'gameStats.balance.bestTime';
         break;
       case 'speedTyping':
         sortField = 'gameStats.speedTyping.bestWPM';
