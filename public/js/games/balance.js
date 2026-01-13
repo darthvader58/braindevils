@@ -15,8 +15,8 @@ class BalanceGame {
     this.canvas = null;
     this.ctx = null;
     this.keys = {};
-    this.mouseX = 0;
-    this.controlMethod = 'mouse'; // 'mouse' or 'keyboard'
+    this.keyPressTime = {};
+    this.controlMethod = 'keyboard'; // 'mouse' or 'keyboard'
     
     // Physics variables
     this.stickAngle = 0; // Current rotation angle of the stick
@@ -72,9 +72,9 @@ class BalanceGame {
         <div class="balance-game-area">
           <canvas id="balanceCanvas" width="600" height="400"></canvas>
           <div class="control-instructions">
-            <p><strong>Controls:</strong> Move mouse left/right OR use ← → arrow keys (A/D also work)</p>
+            <p><strong>Controls:</strong> Use ← → arrow keys or A/D keys to tilt the stick</p>
             <p><strong>Goal:</strong> Keep the ball on the stick as long as possible!</p>
-            <p id="controlStatus" style="font-size: 0.9em; color: #666; margin-top: 5px;">Move mouse or press arrow keys to start the timer</p>
+            <p id="controlStatus" style="font-size: 0.9em; color: #666; margin-top: 5px;">Press arrow keys or A/D to start the timer</p>
           </div>
         </div>
 
@@ -235,29 +235,60 @@ class BalanceGame {
     }
 
     let userTorque = 0;
-    const maxMouseTorque = 4.0;
-    const maxKeyboardTorque = 1.2;
+    let baseKeyboardTorque, maxKeyboardTorque;
+    
+    // Adjust sensitivity based on difficulty to compensate for shorter sticks
+    switch (this.difficulty) {
+      case 'easy':
+        baseKeyboardTorque = 0.08;
+        maxKeyboardTorque = 0.4;
+        break;
+      case 'medium':
+        baseKeyboardTorque = 0.05;  // Reduced for shorter stick
+        maxKeyboardTorque = 0.25;   // Reduced for shorter stick
+        break;
+      case 'hard':
+        baseKeyboardTorque = 0.03;  // Much reduced for very short stick
+        maxKeyboardTorque = 0.15;   // Much reduced for very short stick
+        break;
+      default:
+        baseKeyboardTorque = 0.08;
+        maxKeyboardTorque = 0.4;
+    }
+    
     let hasUserInput = false;
     
-    if (this.controlMethod === 'mouse') {
-      if (Math.abs(this.mouseX) > 0.01) {
-        hasUserInput = true;
-        userTorque = this.mouseX * maxMouseTorque;
+    if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
+      hasUserInput = true;
+      let pressTime = 0;
+      if (this.keys['ArrowLeft'] && this.keyPressTime['ArrowLeft']) {
+        pressTime = (Date.now() - this.keyPressTime['ArrowLeft']) / 1000;
+      } else if (this.keys['a'] && this.keyPressTime['a']) {
+        pressTime = (Date.now() - this.keyPressTime['a']) / 1000;
+      } else if (this.keys['A'] && this.keyPressTime['A']) {
+        pressTime = (Date.now() - this.keyPressTime['A']) / 1000;
       }
-      document.getElementById('controlStatus').textContent = 'Using Mouse Controls';
-      document.getElementById('controlStatus').style.color = '#4ECDC4';
-    } else if (this.controlMethod === 'keyboard') {
-      if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
-        hasUserInput = true;
-        userTorque -= maxKeyboardTorque;
-      }
-      if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) {
-        hasUserInput = true;
-        userTorque += maxKeyboardTorque;
-      }
-      document.getElementById('controlStatus').textContent = 'Using Keyboard Controls (← →)';
-      document.getElementById('controlStatus').style.color = '#FF6B6B';
+      const acceleration = Math.min(pressTime * 0.5, 1.5);
+      userTorque -= baseKeyboardTorque * (1 + acceleration);
     }
+    if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) {
+      hasUserInput = true;
+      let pressTime = 0;
+      if (this.keys['ArrowRight'] && this.keyPressTime['ArrowRight']) {
+        pressTime = (Date.now() - this.keyPressTime['ArrowRight']) / 1000;
+      } else if (this.keys['d'] && this.keyPressTime['d']) {
+        pressTime = (Date.now() - this.keyPressTime['d']) / 1000;
+      } else if (this.keys['D'] && this.keyPressTime['D']) {
+        pressTime = (Date.now() - this.keyPressTime['D']) / 1000;
+      }
+      const acceleration = Math.min(pressTime * 0.8, 2.0);
+      userTorque += baseKeyboardTorque * (1 + acceleration);
+    }
+    
+    userTorque = Math.max(-maxKeyboardTorque, Math.min(maxKeyboardTorque, userTorque));
+    
+    document.getElementById('controlStatus').textContent = 'Using Keyboard Controls (← → or A/D)';
+    document.getElementById('controlStatus').style.color = '#FF6B6B';
 
     if (hasUserInput) {
       this.startGameTimer();
@@ -385,13 +416,9 @@ class BalanceGame {
     ctx.fillText(`Ball Mass: ${(0.3 * this.sensitivity).toFixed(2)}kg`, 20, 70);
     ctx.fillText(`Stick Angle: ${((this.stickAngle || 0) * 180 / Math.PI).toFixed(1)}°`, 20, 90);
     
-    if (this.controlMethod === 'keyboard') {
-      const leftPressed = this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A'];
-      const rightPressed = this.keys['ArrowRight'] || this.keys['d'] || this.keys['D'];
-      ctx.fillText(`Keys: ${leftPressed ? '←' : ''} ${rightPressed ? '→' : ''}`, 20, 110);
-    } else if (this.controlMethod === 'mouse') {
-      ctx.fillText(`Mouse: ${this.mouseX.toFixed(2)}`, 20, 110);
-    }
+    const leftPressed = this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A'];
+    const rightPressed = this.keys['ArrowRight'] || this.keys['d'] || this.keys['D'];
+    ctx.fillText(`Keys: ${leftPressed ? '←' : ''} ${rightPressed ? '→' : ''}`, 20, 110);
 
     // Draw balance indicator
     const balanceBarWidth = 200;
@@ -514,6 +541,7 @@ class BalanceGame {
     this.score = 0;
     this.stickAngle = 0;
     this.stickAngularVelocity = 0;
+    this.keyPressTime = {};
 
     document.getElementById('startBtn').style.display = 'inline-block';
     document.getElementById('resetBtn').style.display = 'none';
