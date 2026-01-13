@@ -74,7 +74,7 @@ class BalanceGame {
           <div class="control-instructions">
             <p><strong>Controls:</strong> Move mouse left/right OR use ← → arrow keys (A/D also work)</p>
             <p><strong>Goal:</strong> Keep the ball on the stick as long as possible!</p>
-            <p id="controlStatus" style="font-size: 0.9em; color: #666; margin-top: 5px;">Click canvas or press arrow keys to start controlling</p>
+            <p id="controlStatus" style="font-size: 0.9em; color: #666; margin-top: 5px;">Move mouse or press arrow keys to start the timer</p>
           </div>
         </div>
 
@@ -175,7 +175,8 @@ class BalanceGame {
 
   start() {
     this.gameActive = true;
-    this.startTime = Date.now();
+    this.gameStarted = false;
+    this.startTime = null;
     this.ballPosition = 0;
     this.ballVelocity = 0;
     this.sensitivity = 1;
@@ -194,8 +195,15 @@ class BalanceGame {
       this.canvas.focus();
     }, 100);
 
-    this.startSensitivityTimer();
     this.gameLoop();
+  }
+
+  startGameTimer() {
+    if (!this.gameStarted && this.gameActive) {
+      this.gameStarted = true;
+      this.startTime = Date.now();
+      this.startSensitivityTimer();
+    }
   }
 
   startSensitivityTimer() {
@@ -219,25 +227,40 @@ class BalanceGame {
 
   update() {
     const deltaTime = 1/60;
-    this.gameTime = (Date.now() - this.startTime) / 1000;
+    
+    if (this.gameStarted && this.startTime) {
+      this.gameTime = (Date.now() - this.startTime) / 1000;
+    } else {
+      this.gameTime = 0;
+    }
 
     let userTorque = 0;
     const maxMouseTorque = 4.0;
     const maxKeyboardTorque = 1.2;
+    let hasUserInput = false;
     
     if (this.controlMethod === 'mouse') {
-      userTorque = this.mouseX * maxMouseTorque;
+      if (Math.abs(this.mouseX) > 0.01) {
+        hasUserInput = true;
+        userTorque = this.mouseX * maxMouseTorque;
+      }
       document.getElementById('controlStatus').textContent = 'Using Mouse Controls';
       document.getElementById('controlStatus').style.color = '#4ECDC4';
     } else if (this.controlMethod === 'keyboard') {
       if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
+        hasUserInput = true;
         userTorque -= maxKeyboardTorque;
       }
       if (this.keys['ArrowRight'] || this.keys['d'] || this.keys['D']) {
+        hasUserInput = true;
         userTorque += maxKeyboardTorque;
       }
       document.getElementById('controlStatus').textContent = 'Using Keyboard Controls (← →)';
       document.getElementById('controlStatus').style.color = '#FF6B6B';
+    }
+
+    if (hasUserInput) {
+      this.startGameTimer();
     }
 
     const gravity = 9.81;
@@ -414,11 +437,19 @@ class BalanceGame {
     document.getElementById('currentScore').textContent = this.score;
 
     const gameStats = document.getElementById('gameStats');
-    gameStats.innerHTML = `
-      Time: ${this.gameTime.toFixed(1)}s | 
-      Sensitivity: ${this.sensitivity.toFixed(1)}x | 
-      Score: ${this.score}
-    `;
+    if (!this.gameStarted && this.gameActive) {
+      gameStats.innerHTML = `
+        Waiting for input | 
+        Sensitivity: ${this.sensitivity.toFixed(1)}x | 
+        Score: ${this.score}
+      `;
+    } else {
+      gameStats.innerHTML = `
+        Time: ${this.gameTime.toFixed(1)}s | 
+        Sensitivity: ${this.sensitivity.toFixed(1)}x | 
+        Score: ${this.score}
+      `;
+    }
   }
 
   togglePause() {
@@ -472,6 +503,7 @@ class BalanceGame {
 
   reset() {
     this.gameActive = false;
+    this.gameStarted = false;
     cancelAnimationFrame(this.animationFrame);
     clearInterval(this.sensitivityTimer);
 
