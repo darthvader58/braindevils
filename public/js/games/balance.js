@@ -16,6 +16,9 @@ class BalanceGame {
     this.ctx = null;
     this.keys = {};
     this.keyPressTime = {};
+    this.mouseX = 0;
+    this.touchX = 0;
+    this.isTouching = false;
     this.controlMethod = 'keyboard'; // 'mouse' or 'keyboard'
     
     // Physics variables
@@ -120,8 +123,41 @@ class BalanceGame {
       if (!this.gameActive) return;
       const rect = this.canvas.getBoundingClientRect();
       this.mouseX = (e.clientX - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
-      this.mouseX = Math.max(-1, Math.min(1, this.mouseX)); // Clamp between -1 and 1
+      this.mouseX = Math.max(-1, Math.min(1, this.mouseX));
       this.controlMethod = 'mouse';
+    });
+
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (!this.gameActive) return;
+      e.preventDefault();
+      this.isTouching = true;
+      const rect = this.canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      this.touchX = (touch.clientX - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
+      this.touchX = Math.max(-1, Math.min(1, this.touchX));
+      this.controlMethod = 'touch';
+    });
+
+    this.canvas.addEventListener('touchmove', (e) => {
+      if (!this.gameActive || !this.isTouching) return;
+      e.preventDefault();
+      const rect = this.canvas.getBoundingClientRect();
+      const touch = e.touches[0];
+      this.touchX = (touch.clientX - rect.left - this.canvas.width / 2) / (this.canvas.width / 2);
+      this.touchX = Math.max(-1, Math.min(1, this.touchX));
+      this.controlMethod = 'touch';
+    });
+
+    this.canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      this.isTouching = false;
+      this.touchX = 0;
+    });
+
+    this.canvas.addEventListener('touchcancel', (e) => {
+      e.preventDefault();
+      this.isTouching = false;
+      this.touchX = 0;
     });
 
     // Keyboard controls - attach to document for better responsiveness
@@ -258,7 +294,13 @@ class BalanceGame {
     
     let hasUserInput = false;
     
-    if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
+    if (this.controlMethod === 'touch' && this.isTouching) {
+      hasUserInput = true;
+      const maxTouchTorque = maxKeyboardTorque * 3;
+      userTorque = this.touchX * maxTouchTorque;
+      document.getElementById('controlStatus').textContent = 'Using Touch Controls';
+      document.getElementById('controlStatus').style.color = '#4ECDC4';
+    } else if (this.keys['ArrowLeft'] || this.keys['a'] || this.keys['A']) {
       hasUserInput = true;
       let pressTime = 0;
       if (this.keys['ArrowLeft'] && this.keyPressTime['ArrowLeft']) {
